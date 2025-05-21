@@ -112,7 +112,7 @@
     width: 100%;
     margin: 0;
     padding: 10px;
-    height: calc(100vh - 55px); /* espacio para el sidebar inferior, ajusta si es más alto */
+    height: calc(100vh - 100px); /* espacio para el sidebar inferior, ajusta si es más alto */
     max-width: 100%;
   }
 
