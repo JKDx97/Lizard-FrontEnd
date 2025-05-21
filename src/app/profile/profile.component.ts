@@ -1,4 +1,3 @@
-
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -9,7 +8,6 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
-  
 } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
@@ -28,9 +26,7 @@ import Swal from 'sweetalert2';
   styleUrl: './profile.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-
 export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
-  
   @ViewChild('videoPlayer', { static: false })
   videoPlayer!: ElementRef<HTMLVideoElement>;
   @ViewChild('photoInput', { static: false })
@@ -39,7 +35,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   textArea!: ElementRef<HTMLInputElement>;
   @ViewChild('exampleModal', { static: false }) exampleModal!: ElementRef;
 
-  uploadProgress : number = 0; // Inicializa la variable para el progreso
+  uploadProgress: number = 0; // Inicializa la variable para el progreso
 
   userPosts: any[] = [];
   selectedFile: File | null = null;
@@ -75,7 +71,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onImageError(event: any) {
     const target = event.target as HTMLImageElement;
-    target.src = 'assets/default.png'; 
+    target.src = 'assets/default.png';
   }
 
   ngAfterViewInit() {
@@ -205,7 +201,8 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.previewImage = this.getPhotoUrl(this.profile?.photo) || 'ruta/imagen_por_defecto.png';
+    this.previewImage =
+      this.getPhotoUrl(this.profile?.photo) || 'ruta/imagen_por_defecto.png';
 
     import('emoji-picker-element').then(() => {
       console.log('Emoji Picker Element loaded');
@@ -218,7 +215,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     const username = this.route.snapshot.paramMap.get('username');
     if (username) {
       this.user = this.authService.getUserData();
-      
+
       if (this.user && this.user._id) {
         this.loadUserPosts(this.user._id);
         this.onGetProfile(this.user._id);
@@ -226,8 +223,10 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.postService.onNewPost().subscribe((newPost: any) => {
           this.ngZone.run(() => {
-            this.userPosts.unshift(newPost);
-            this.cd.detectChanges();
+            if (newPost.author && newPost.author._id === this.user._id) {
+              this.userPosts.unshift(newPost);
+              this.cd.detectChanges();
+            }
           });
         });
         this.profileService.OnNewprofile().subscribe((newProfile: any) => {
@@ -280,7 +279,6 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
 
   previewImage: string = ''; // Imagen por defecto antes de la selección
 
-
   onFileProfile(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -319,7 +317,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
           title: 'Post creado con éxito',
           text: 'Tu publicación se ha creado correctamente.',
           timer: 1500,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
 
         this.reset(); // Restablecer el formulario
@@ -330,24 +328,19 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
           title: 'Error',
           text: 'Hubo un error al crear el post. Intenta nuevamente.',
           showConfirmButton: false,
-          timer: 1500 // Opcional: tiempo para el error también
+          timer: 1500, // Opcional: tiempo para el error también
         });
       }
     );
   }
- 
 
-  
   loadUserPosts(userId: string): void {
-    this.postService.getUserPosts(userId).subscribe(
-      (posts) => {
-        this.userPosts = posts;
-      }
-    );
+    this.postService.getUserPosts(userId).subscribe((posts) => {
+      this.userPosts = posts;
+    });
   }
 
   onUploadProfile() {
-    
     if (this.selectedProfile) {
       Swal.fire({
         title: 'Guardando...',
@@ -365,13 +358,10 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
               title: 'Foto de perfil subido con éxito',
               text: 'Tu publicación se ha creado correctamente.',
               timer: 1500,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
-            
           },
-          error: (error) => {
-            
-          },
+          error: (error) => {},
         });
     } else {
     }
@@ -395,35 +385,35 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.userPosts.filter((post) => post?.photo).length;
   }
   //Modal
-  modalContent: { 
-    photoUrl: string | undefined; 
-    author?: string; 
-    content?: string; 
-    createdAt?: string;  // Agrega la fecha de creación aquí
+  modalContent: {
+    photoUrl: string | undefined;
+    author?: string;
+    content?: string;
+    createdAt?: string; // Agrega la fecha de creación aquí
   } | null = null;
   openModal(post: any): void {
     // Pausar el video antes de abrir el modal
     if (this.videoPlayer?.nativeElement) {
       this.videoPlayer.nativeElement.pause();
     }
-  
+
     // Establecer el contenido del modal con más detalles
     this.modalContent = {
       photoUrl: this.getPostUrl(post.photo),
       author: post.author?.username,
       content: post.content,
-      createdAt: post.createdAt,  // Asigna la fecha de creación
+      createdAt: post.createdAt, // Asigna la fecha de creación
     };
-  
+
     // Abrir el modal
     const modalElement = document.getElementById('expandedModal');
     const modal = new (window as any).bootstrap.Modal(modalElement);
     modal.show();
-  
+
     modalElement?.addEventListener('shown.bs.modal', () => {
       // Lógica adicional cuando el modal se muestra
     });
-  
+
     // Evento para limpiar el modal y detener el video cuando se cierra
     modalElement?.addEventListener('hidden.bs.modal', () => {
       this.destroyModal();
@@ -433,7 +423,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!fileName) return false;
     return /\.(jpg|jpeg|png|gif|jfif)$/i.test(fileName);
   }
-  
+
   isVideo(fileName: string | null | undefined): boolean {
     if (!fileName) return false;
     return /\.(mp4|mov|avi|mkv)$/i.test(fileName);
@@ -559,16 +549,16 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     this.post.content += emoji; // Agrega el emoji al contenido del textarea
   }
 
-
   playVideoInModal(): void {
-    const videoElement = document.querySelector('#expandedModal video') as HTMLVideoElement; // Afirmación de tipo
+    const videoElement = document.querySelector(
+      '#expandedModal video'
+    ) as HTMLVideoElement; // Afirmación de tipo
     if (videoElement) {
       videoElement.play().catch((error) => {
-        console.error("Error al intentar reproducir el video:", error);
+        console.error('Error al intentar reproducir el video:', error);
       }); // Reproducir el video
     }
   }
-  
 
   destroyModal(): void {
     // Si el video está en reproducción, pausarlo
@@ -576,7 +566,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
       this.videoPlayer.nativeElement.pause();
       // No limpiar el src aquí, solo asegurarte de que el video esté pausado
     }
-  
+
     // Limpiar el contenido del modal (si es necesario)
     this.modalContent = null; // Esto limpia el contenido del modal, asegurando que se cargue nuevamente al abrir
   }
@@ -587,7 +577,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     if (modalElement) {
       const bootstrapModal = new (window as any).bootstrap.Modal(modalElement);
       bootstrapModal.show();
-      this.closeMenu()
+      this.closeMenu();
     }
   }
 
@@ -598,12 +588,12 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isMenuOpen = false;
   }
 
-  openModalProfileUpload(){
-    const modalElement = document.getElementById('uploadPhotoModal')
-    if(modalElement){
-      const bootstrapModal = new (window as any).bootstrap.Modal(modalElement)
-      bootstrapModal.show()
-      this.closeMenu()
+  openModalProfileUpload() {
+    const modalElement = document.getElementById('uploadPhotoModal');
+    if (modalElement) {
+      const bootstrapModal = new (window as any).bootstrap.Modal(modalElement);
+      bootstrapModal.show();
+      this.closeMenu();
     }
   }
   onCancelProfile(): void {
@@ -611,11 +601,11 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     this.previewImage = this.getPhotoUrl(this.profile.photo); // Asignar la foto de perfil actual
 
     // Restablecer el input file
-    const inputElement = document.getElementById('imageUpload') as HTMLInputElement;
+    const inputElement = document.getElementById(
+      'imageUpload'
+    ) as HTMLInputElement;
     if (inputElement) {
-      inputElement.value = '';  // Limpiar el input de archivo
+      inputElement.value = ''; // Limpiar el input de archivo
     }
   }
-
-  
 }
