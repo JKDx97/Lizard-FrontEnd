@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
-import { environment } from '../environments/environment'
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,10 @@ export class ProfileService {
   private uploadUrl = `${environment.api}/profile`;
 
   constructor(private http: HttpClient) {
-    this.socket = io(environment.api);
+    this.socket = io(environment.api, {
+      transports: ['websocket', 'polling'],
+      withCredentials: true,
+    });
   }
 
   uploadPhoto(userId: string, file: File): Observable<any> {
