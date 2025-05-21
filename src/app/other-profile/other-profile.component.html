@@ -1,0 +1,199 @@
+<section class="h-100 gradient-custom-2">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center">
+            <div class="col col-lg-10 col-xl-9">
+                <!-- Cambié col-lg-9 a col-lg-10 -->
+                <div class="card custom-card-width">
+                    <!-- Agregué la clase personalizada aquí -->
+                    <div class="rounded-top text-white d-flex flex-row profile-header">
+                        <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px">
+                            <div class="menu-container">
+                                <img [attr.src]="profile?.photo ? getPhotoUrl(profile.photo) : 'https://pedagogicojesusdenazareth.edu.pe/wp-content/uploads/2024/06/avatar.png'"
+                                    alt="Profile picture" class="img-fluid rounded-circle mt-4 mb-2"
+                                    style="width: 150px; height: 150px; object-fit: cover; z-index: 2; position: relative;" />
+                            </div>
+                        </div>
+                        <div class="info">
+                        <div class="">
+                            <h3 id="user-index" class="">{{ user?.username }}</h3>
+                            <p class="">{{ user?.name }} {{user?.lastName}}</p>
+                        </div>
+                    </div>
+                        <div class="">
+                            <div class="">
+                                <button (click)="toggleFollow()" class="btn follow-btn"
+                                    [ngClass]="isFollowing ? 'unfollow' : 'follow'">
+                                    {{ isFollowing ? 'Dejar de seguir' : 'Seguir' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="social icons">
+                        <div class="social-icons mt-3">
+                            <a href="https://facebook.com" target="_blank" class="facebook"><i
+                                    class="fab fa-facebook fa-2x"></i></a>
+                            <a href="https://twitter.com" target="_blank" class="twitter"><i
+                                    class="fa-brands fa-x-twitter fa-2x"></i></a>
+                            <a href="https://instagram.com" target="_blank" class="instagram"><i
+                                    class="fab fa-instagram fa-2x"></i></a>
+                            <a href="https://linkedin.com" target="_blank" class="threads"><i
+                                    class="fa-brands fa-threads fa-2x"></i></a>
+                            <a href="https://youtube.com" target="_blank" class="youtube"><i
+                                    class="fab fa-youtube fa-2x"></i></a>
+                            <a href="https://tiktok.com" target="_blank" class="tiktok"><i
+                                    class="fab fa-tiktok fa-2x"></i></a>
+                        </div>
+                    </div>
+                    <div class="text-black">
+                        <div class="d-flex justify-content-around text-center py-2 text-body border-top border-bottom">
+                            <div>
+                                <p class="mb-1 h5">123</p>
+                                <p class="small text-muted mb-0">Posteos</p>
+                            </div>
+                            <div class="px-3">
+                                <p class="mb-1 h5">123</p>
+                                <p class="small text-muted mb-0">Fotos</p>
+                            </div>
+                            <div (click)="openFollowersModal()" style="cursor: pointer;">
+                                <p class="mb-1 h5">{{ followerCount }}</p>
+                                <p class="small text-muted mb-0">Seguidores</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 text-black">
+                        <div>
+                            <div class="d-flex justify-content-center">
+                                <div *ngIf="posts.length > 0; else noPosts" class="w-75 text-start">
+                                    <div *ngFor="let post of posts" class="mb-4">
+                                        <ng-container *ngIf="post?.photo">
+                                            <div>
+                                                <img *ngIf="isImage(post.photo)" [src]="getPostUrl(post.photo)" alt=""
+                                                    class="img-fluid rounded shadow-sm mb-2" />
+                                            </div>
+
+
+                                            <ng-container *ngIf="isVideo(post.photo)">
+                                                <div class="video-container">
+                                                    <video #videoPlayer [src]="getPostUrl(post.photo)"
+                                                        (timeupdate)="updateProgress(videoPlayer)"
+                                                        (waiting)="isLoading = true" (canplay)="isLoading = false"
+                                                        class="video-style" style="cursor: pointer;"></video>
+
+                                                    <div class="spinner" *ngIf="isLoading">
+                                                        <i class="fa fa-spinner fa-spin"></i>
+                                                    </div>
+
+                                                    <!-- Controles personalizados -->
+                                                    <div class="controls">
+                                                        <button (click)="togglePlayPause(videoPlayer)">
+                                                            <i [ngClass]="{'fa-play': videoPlayer.paused, 'fa-pause': !videoPlayer.paused}"
+                                                                class="fa"></i>
+                                                        </button>
+
+                                                        <div class="progress-container">
+                                                            <input type="range" class="progress-bar"
+                                                                (input)="seekVideo(videoPlayer, $event)"
+                                                                [value]="currentProgress" max="100">
+                                                            <div class="time-info">
+                                                                <span>{{ currentTime }} / {{ duration }}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="volume-control">
+                                                            <i (click)="toggleMute(videoPlayer)"
+                                                                [ngClass]="{'fa-volume-up': videoPlayer.volume > 0.5 && !videoPlayer.muted, 
+                                                                            'fa-volume-down': videoPlayer.volume <= 0.5 && videoPlayer.volume > 0 && !videoPlayer.muted, 
+                                                                            'fa-volume-off': videoPlayer.muted || videoPlayer.volume == 0}" class="fa">
+                                                            </i>
+                                                            <input type="range" (input)="changeVolume($event)"
+                                                                [value]="videoPlayer.volume" min="0" max="1"
+                                                                step="0.01" />
+                                                        </div>
+
+                                                        <button (click)="toggleFullScreen(videoPlayer)">
+                                                            <i class="fa fa-expand"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+
+                                            <div class="post-icons">
+                                                <i class="far fa-heart"></i>
+                                                <i class="far fa-comment"></i>
+                                                <i class="far fa-paper-plane"></i>
+                                            </div>
+                                        </ng-container>
+
+                                        <!-- Al hacer clic en el contenido, se abre el modal -->
+                                        <p>{{ post?.content }}
+                                        </p>
+                                        <div *ngIf="!post?.photo" class="post-icons" style="margin-top: -10px;">
+                                            <i class="far fa-heart"></i>
+                                            <i class="far fa-comment"></i>
+                                            <i class="far fa-paper-plane"></i>
+                                        </div>
+
+                                        <div class="d-flex align-items-center" style="margin-top: 10px;">
+                                            <img [src]="getPhotoUrl(profile?.photo) || 'default-avatar-url.jpg'"
+                                                alt="Author's photo" class="rounded-circle me-2"
+                                                style="width: 30px; height: 30px; object-fit: cover" />
+                                            <span style="font-weight: bold;">{{ user?.username }}</span>
+                                        </div>
+
+                                        <p style="margin-left: 38px; font-size: 12px">
+                                            {{ post?.createdAt | timeAgo }}
+                                        </p>
+
+                                        <hr />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ng-template #noPosts>
+                                <p class="text-center">No has publicado ningún post todavía.</p>
+                            </ng-template>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="followersModalLabel">Seguidores</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="followers.length; else noFollowers">
+                    <div *ngFor="let follower of followers" class="mb-2 d-flex align-items-center">
+                        <img [src]="getPhotoUrl(follower.photo)" alt="Foto de perfil" class="profile-photo">
+                        <div class="user-info" style="flex-grow: 1; margin-left: 10px;">
+                            <p class="username">{{ follower.username }}</p>
+                            <p class="fullname mb-0">{{ follower.name }} {{ follower.lastName }}</p>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #noFollowers>
+                    <p>No tienes seguidores.</p>
+                </ng-template>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

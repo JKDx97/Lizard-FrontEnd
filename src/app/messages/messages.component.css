@@ -1,0 +1,148 @@
+.card-container {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #f4f7fa;
+  width: calc(100% - 580px); 
+  margin-left: 280px;
+  margin-right: 280px;
+  max-width: 800px;
+  padding: 20px;
+}
+
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.username {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 10;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.card-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background-color: #fdfdfd;
+}
+
+.card-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background-color: #ffffff;
+}
+
+.message {
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.4;
+  animation: fadeIn 0.4s ease-in-out;
+  transition: transform 0.2s ease;
+  word-wrap: break-word;
+}
+
+.message-left {
+  align-self: flex-start;
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  border-radius: 18px 18px 18px 0;
+}
+
+.message-right {
+  align-self: flex-end;
+  background-color: #d1ffd6;
+  color: #1e5631;
+  border-radius: 18px 18px 0 18px;
+}
+
+.message-content {
+  white-space: pre-line;
+}
+
+.input-group input.form-control {
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 1px solid #ced4da;
+}
+
+.input-group button.btn {
+  padding: 12px 20px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.input-group button.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Animación al entrar */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-message {
+  animation: fadeIn 0.3s ease-in-out;
+}
+@media (max-width: 768px) {
+  .card-container {
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    height: calc(100vh - 55px); /* espacio para el sidebar inferior, ajusta si es más alto */
+    max-width: 100%;
+  }
+
+  .card {
+    border-radius: 0 !important;
+    height: 100%;
+  }
+
+  .username {
+    padding: 12px 16px;
+  }
+
+  .card-body {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .message {
+    max-width: 90%;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .input-group input.form-control {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+
+  .input-group button.btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}

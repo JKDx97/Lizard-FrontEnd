@@ -1,0 +1,21 @@
+<button class="hamburger-btn d-md-none"  [class.open]="isSidebarOpen" (click)="toggleSidebar()">
+  &#9776; <!-- Unicode para el icono ☰ -->
+</button>
+<div class="sidebar" [class.open]="isSidebarOpen">
+  <div class="following-section">
+    <h5 class="section-title">Siguiendo</h5>
+    <ul>
+      <li *ngFor="let followingUser of following" (click)="selectUser(followingUser)" class="following-card">
+        <a href="javascript:void(0)" class="following-item d-flex align-items-center">
+          <img [attr.src]="followingUser?.credentials?.profile?.photo ? getPhotoUrl(followingUser?.credentials?.profile?.photo) : '/images/default.jpeg'"
+            class="rounded-circle me-3 shadow-sm profile-img" />
+          <div>
+            <div class="user-name">{{ followingUser.name }} {{ followingUser.lastName }}</div>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<app-messages *ngIf="selectedUser" [@fadeIn]="selectedUser" [user]="selectedUser"></app-messages>

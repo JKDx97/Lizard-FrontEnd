@@ -1,0 +1,141 @@
+<div class="back">
+    <div class="container-responsive posteos">
+        <div *ngIf="posts.length > 0; else noPosts">
+            <div *ngFor="let post of posts" class="mb-4">
+                <ng-container *ngIf="post?.photo">
+                    <div>
+                        <img *ngIf="isImage(post.photo)" [src]="getPostUrl(post.photo)" alt=""
+                            class="img-fluid post-image" />
+                    </div>
+
+
+                    <ng-container *ngIf="isVideo(post.photo)">
+                        <div class="video-container">
+                            <video #videoPlayer [src]="getPostUrl(post.photo)"
+                                (timeupdate)="updateProgress(videoPlayer)" (waiting)="isLoading = true"
+                                (canplay)="isLoading = false" class="video-style" style="cursor: pointer;"></video>
+
+                            <div class="spinner" *ngIf="isLoading">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+
+                            <!-- Controles personalizados -->
+                            <div class="controls">
+                                <button (click)="togglePlayPause(videoPlayer)">
+                                    <i [ngClass]="{'fa-play': videoPlayer.paused, 'fa-pause': !videoPlayer.paused}"
+                                        class="fa"></i>
+                                </button>
+
+                                <div class="progress-container">
+                                    <input type="range" class="progress-bar" (input)="seekVideo(videoPlayer, $event)"
+                                        [value]="currentProgress" max="100">
+                                    <div class="time-info">
+                                        <span>{{ currentTime }} / {{ duration }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="volume-control">
+                                    <i (click)="toggleMute(videoPlayer)" [ngClass]="{'fa-volume-up': videoPlayer.volume > 0.5 && !videoPlayer.muted, 
+                                                'fa-volume-down': videoPlayer.volume <= 0.5 && videoPlayer.volume > 0 && !videoPlayer.muted, 
+                                                'fa-volume-off': videoPlayer.muted || videoPlayer.volume == 0}"
+                                        class="fa">
+                                    </i>
+                                    <input type="range" (input)="changeVolume($event)" [value]="videoPlayer.volume"
+                                        min="0" max="1" step="0.01" />
+                                </div>
+
+                                <button (click)="toggleFullScreen(videoPlayer)">
+                                    <i class="fa fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <div class="post-icons">
+                        <i class="fa-heart"
+                            [ngClass]="{'fa-solid liked': post.userHasLiked, 'fa-regular': !post.userHasLiked}"
+                            (click)="toggleLike(post)">
+                        </i>
+                        <i class="far fa-comment" data-bs-toggle="modal" data-bs-target="#commentsModal"
+                            (click)="openCommentsModal(post)"></i>
+                        <i class="far fa-paper-plane"></i>
+                    </div>
+                </ng-container>
+                <!-- Al hacer clic en el contenido, se abre el modal -->
+                <p>{{ post?.content }}
+                </p>
+                <div *ngIf="!post?.photo" class="post-icons" style="margin-top: -10px;">
+                    <div class="post-icons">
+                        <i class="fa-heart"
+                            [ngClass]="{'fa-solid liked': post.userHasLiked, 'fa-regular': !post.userHasLiked}"
+                            (click)="toggleLike(post)">
+                        </i>
+                        <i class="far fa-comment" data-bs-toggle="modal" data-bs-target="#commentsModal"
+                            (click)="openCommentsModal(post)"></i>
+                        <i class="far fa-paper-plane"></i>
+                    </div>
+                </div>
+                <p class="likeCount">{{ post.likesCount || 0 }} Me gusta</p>
+
+                <div class="d-flex align-items-center" style="margin-top: 10px;">
+                    <img [src]="getPhotoUrl(post?.profilePhoto) || 'default-avatar-url.jpg'" alt="Author's photo"
+                        class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover" />
+                    <span style="font-weight: bold;">{{ post?.author?.username }}</span>
+                </div>
+
+                <p style="margin-left: 38px; font-size: 12px">
+                    {{ post?.createdAt | timeAgo }}
+                </p>
+
+                <hr />
+
+            </div>
+
+        </div>
+        <ng-template #noPosts>
+            <p class="text-center">No has publicado ningún post todavía.</p>
+        </ng-template>
+    </div>
+</div>
+
+<div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content comment-modal">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-primary" id="commentsModalLabel">Comentarios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+                <p class="mb-3 fw-semibold" *ngIf="selectedPost?.content">{{ selectedPost?.content }}</p>
+
+                <div *ngIf="selectedPost?.comments">
+                    <p class="text-muted">{{ selectedPost.comments.length }} comentario(s)</p>
+
+                    <div class="comment-list-container">
+                        <ul class="list-unstyled">
+                            <li *ngFor="let comment of selectedPost.comments"
+                                class="d-flex align-items-start mb-3 comment-item">
+                                <img *ngIf="isImage(comment.author?.profile?.photo)"
+                                    [src]="getPostUrl(comment.author?.profile?.photo)" alt="Foto perfil"
+                                    class="rounded-circle me-3 shadow-sm comment-avatar" />
+                                <div class="comment-bubble p-3 rounded-3 shadow-sm">
+                                    <div class="fw-semibold text-dark mb-1">{{ comment.author?.username }}</div>
+                                    <div class="text-muted">{{ comment.content }}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <!-- Campo para añadir comentario -->
+                <div class="input-group mt-4">
+                    <input type="text" class="form-control rounded-start-pill" placeholder="Escribe un comentario..."
+                        [(ngModel)]="newCommentText" />
+                    <button class="btn btn-primary rounded-end-pill" (click)="addComment()">Comentar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

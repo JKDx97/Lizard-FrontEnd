@@ -1,0 +1,97 @@
+<div class="body">
+  <div *ngIf="showSidebar" class="sidebar" [ngClass]="{'collapsed': isSidebarCollapsed}">
+    <h3 *ngIf="!isSidebarCollapsed">Lizardジ</h3>
+    <h3 *ngIf="isSidebarCollapsed">ジ</h3> <!-- Muestra el título solo si no está colapsado -->
+    <!-- Muestra el título solo si no está colapsado -->
+    <ul>
+      <li><a [routerLink]="['/principal']" routerLinkActive="active"><i class="fas fa-home"></i> <span>Inicio</span></a>
+      </li>
+      <li style="cursor: pointer;"><a (click)="toggleSidebar()" routerLinkActive="active"><i class="fas fa-search"></i>
+          <span>Buscar</span></a>
+      </li>
+      <li><a [routerLink]="['/direct/inbox']" routerLinkActive="active"><i class="fa-regular fa-envelope"></i>
+          <span>Mensajes</span></a></li>
+      <li><a [routerLink]="['/notificaciones']" routerLinkActive="active"><i class="fa-regular fa-heart"></i>
+          <span>Notificaciones</span></a></li>
+      <li><a [routerLink]="['/crear']" routerLinkActive="active"><i class="fa-regular fa-circle-down"></i>
+          <span>Crear</span></a></li>
+      <li *ngIf="user">
+        <a [routerLink]="['/perfil', user.username]" routerLinkActive="active">
+          <i><img [attr.src]="profile?.photo ? getPhotoUrl(profile.photo) : 'https://i.pinimg.com/originals/47/3e/84/473e84e35274f087695236414ff8df3b.jpg'"
+              class="img-fluid rounded-circle" style="width: 21px; height: 21px;"></i> <span>Perfil</span>
+        </a>
+      </li>
+      <div class="menu-container">
+        <li><a (click)="toggleMenu()" routerLinkActive="active"><i class="fa-solid fa-sliders"></i> <span>Mas</span></a>
+        </li>
+        <div *ngIf="isMenuOpen" class="menu">
+          <ul>
+            <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+            <li><a href="#"><i class="fas fa-history"></i> Tu actividad</a></li>
+            <li><a href="#"><i class="fas fa-bookmark"></i> Guardado</a></li>
+            <li><a href="#"><i class="fas fa-adjust"></i> Cambiar apariencia</a></li>
+            <li><a href="#"><i class="fas fa-exclamation-circle"></i> Reportar un problema</a></li>
+            <li><a href="#"><i class="fas fa-comments"></i> Threads</a></li>
+            <li><a href="#"><i class="fas fa-exchange-alt"></i> Cambiar de cuenta</a></li>
+            <li><a (click)="logout()"><i class="fas fa-sign-out-alt"></i> Salir</a></li>
+
+          </ul>
+        </div>
+      </div>
+    </ul>
+  </div>
+  <div class="custom-panel" [ngClass]="{
+    'open': isCustomPanelOpen,
+    'sidebar-collapsed': isSidebarCollapsed
+  }" *ngIf="isCustomPanelOpen">
+    <div class="container">
+      <h4>Buscar</h4>
+      <input type="text" #searchInput class="inputBuscar" placeholder="Buscar" [(ngModel)]="searchQuery"
+        (input)="onSearch()">
+    </div>
+    <hr>
+    <div class="recent-searches-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <h5>Recientes</h5>
+
+      <!-- Botón para borrar búsquedas recientes -->
+      <button *ngIf="filteredUsers.length > 0 && searchQuery === ''" (click)="clearRecentSearches()"
+        class="btn-clear-searches" style="margin-left: auto;">
+        Borrar
+      </button>
+    </div>
+
+    <!-- Mostrar resultados de búsqueda -->
+    <div *ngIf="filteredUsers.length > 0">
+      <ul>
+        <li *ngFor="let user of filteredUsers" class="user-item"
+          style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;"
+          [routerLink]="getProfileLink(user.user.username)" (click)="closeCustomPanel(user)">
+          <!-- Imagen de perfil -->
+          <img [src]="getPhotoUrl(user.profile.photo)" alt="Foto de perfil" class="profile-photo">
+
+          <!-- Información del usuario -->
+          <div class="user-info" style="flex-grow: 1; margin-left: 10px;">
+            <p class="username">{{ user.user.username }}</p>
+            <p class="fullname">{{ user.user.name }} {{ user.user.lastName }}</p>
+          </div>
+
+          <!-- Botón de cerrar (X) -->
+
+        </li>
+      </ul>
+    </div>
+
+    <!-- Mostrar mensaje cuando no haya búsquedas recientes -->
+    <div *ngIf="filteredUsers.length === 0" class="no-results">
+      No hay búsquedas recientes
+    </div>
+  </div>
+
+
+</div>
+
+
+
+<div class="content">
+  <router-outlet></router-outlet>
+</div>

@@ -1,0 +1,28 @@
+<div class="card-container shadow-lg">
+  <div class="card rounded-4 border-0">
+    <div class="username border-bottom d-flex align-items-center px-4 py-3">
+      <h5 class="card-title m-0 fw-bold text-primary">
+        {{ user.credentials.username }}
+      </h5>
+    </div>
+
+    <div class="card-body px-4 py-3" #messageContainer>
+      <div *ngFor="let message of messages" 
+           [ngClass]="{ 
+             'message-left': message.sender === user.credentials._id, 
+             'message-right': message.sender !== user.credentials._id 
+           }" 
+           class="message animate-message">
+        <div class="message-content">{{ message.content }}</div>
+      </div>
+    </div>
+
+    <div class="card-footer px-4 py-3 bg-light border-top">
+      <div class="input-group">
+        <input [(ngModel)]="newMessage" type="text" class="form-control rounded-start-pill"
+               placeholder="Escribe un mensaje..." aria-label="Escribe un mensaje">
+        <button class="btn btn-primary rounded-end-pill" type="button" (click)="sendMessage()">Enviar</button>
+      </div>
+    </div>
+  </div>
+</div>

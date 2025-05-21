@@ -1,0 +1,155 @@
+<div class="body">
+    <div class="container-slipe">
+      <div class="side-strip right-strip">
+        <span>Soy un muchacho que solo quiere bajar su pepa creando esta pagina</span>
+      </div>
+      <div class="side-strip right-strip">
+        <span>Para mayor informacion solo llamen al 902278022</span>
+      </div>
+      <div class="side-strip right-strip">
+        <span>Follow me on my social networks</span>
+      </div>
+      <div class="side-strip right-strip">
+        <span>Me ubico en el hermoso pais de Peru mas conocido como Cerru uwu</span>
+      </div>
+      <div class="side-strip right-strip">
+        <span>Os quiero mucho a todos</span>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="company-info">
+      <h2 class="logo">Lizardジ</h2>
+      <p>
+        Lizard te ayuda a mantenerte en contacto con los demas "Lizards" GAAAAAA
+      </p>
+    </div>
+    <div class="card">
+      <h1 class="card-title">Iniciar Sesión</h1>
+      <form (ngSubmit)="onLogin()">
+        <div class="form-group" >
+          <input type="text" placeholder="Correo Electrónico o Usuario" [(ngModel)]="username" name="username" required class="loginInput" />
+        </div>
+        <div class="form-group">
+          <div class="input-container">
+            <input type="password" id="password" placeholder="Contraseña" [(ngModel)]="password" name="password" class="loginInput" required />
+            <span class="input-icon" id="togglePassword">
+              <i class="fas fa-eye" id="eyeIcon"></i>
+            </span>
+          </div>
+        </div>
+        <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
+        <button type="submit" class="btn form-control btn-entrar">Iniciar sesión</button>
+      </form>
+      <br />
+      <a routerLink="/example">¿Olvidaste tu contraseña?</a>
+      <hr class="border border-secondary border-1 opacity-80" />
+      <button class="btn form-control btn-crear" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Crear cuenta nueva
+      </button>
+    </div>
+  </div>
+  <footer class="text-center mt-4">
+    <p>&copy; 2024 Lizardジ. Todos los derechos reservados.</p>
+    <a href="#">Política de privacidad</a> |
+    <a href="#">Términos de servicio</a>
+    <div>
+      <a href="#" class="me-2"><i class="fab fa-facebook"></i></a>
+      <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+    </div>
+  </footer>
+  
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-custom">
+      <div class="modal-content">
+        <div class="containerRegister">
+          <h2>Registrarte</h2>
+          <p>Es rápido y fácil.</p>
+          <hr class="border border-secondary border-1 opacity-80" />
+          <form #registrationForm="ngForm" (ngSubmit)="onSubmit()" #form="ngForm">
+            <div class="form-group">
+              <input type="text" class="loginInput" placeholder="Nombres" name="name" [(ngModel)]="user.name" required />
+            </div>
+            <div class="form-group">
+              <input type="text" class="loginInput" placeholder="Apellidos" name="lastName" [(ngModel)]="user.lastName"
+                required />
+            </div>
+            <div class="form-group">
+              <label for="fecha-nacimiento">Fecha de nacimiento</label>
+              <div class="d-flex">
+                <!-- Día -->
+                <select class="loginInput" name="day" [(ngModel)]="user.day" required>
+                  <option value="" disabled>Día</option>
+                  <option *ngFor="let d of days" [ngValue]="d">{{ d }}</option>
+                </select>
+  
+                <!-- Mes -->
+                <select class="loginInput" name="month" [(ngModel)]="user.month" required>
+                  <option value="" disabled>Mes</option>
+                  <option *ngFor="let m of months" [ngValue]="m.value">
+                    {{ m.label }}
+                  </option>
+                </select>
+  
+                <!-- Año -->
+                <select class="loginInput" name="year" [(ngModel)]="user.year" required>
+                  <option value="" disabled>Año</option>
+                  <option *ngFor="let y of availableYears" [ngValue]="y">
+                    {{ y }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Género</label>
+              <div class="radiobutton">
+                <label class="me-2">
+                  <input type="radio" class="radiogenero" name="genero" value="mujer" [(ngModel)]="user.genre" required />
+                  Mujer
+                </label>
+                <label class="me-2">
+                  <input type="radio" class="radiogenero" name="genero" value="hombre" [(ngModel)]="user.genre"
+                    required />
+                  Hombre
+                </label>
+              </div>
+            </div>
+            <div class="form-group email">
+              <input type="email" class="loginInput" placeholder="Usuario" name="username" [(ngModel)]="user.username"
+                [class.is-invalid]="usernameTaken" (ngModelChange)="checkUsername()" required />
+              <div *ngIf="usernameTaken" class="text-danger">
+                Parece que el usuario ya está tomado. Intenta con otro.
+              </div>
+            </div>
+            <div class="form-group email">
+              <input type="email" class="loginInput" placeholder="Correo Electrónico" name="email"
+                [(ngModel)]="user.email" required [class.is-invalid]="emailTaken" (ngModelChange)="checkEmail()" />
+              <div *ngIf="emailTaken" class="text-danger">
+                Parece que el correo ya está tomado. Intenta con otro.
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="password" (ngModelChange)="calculatePasswordStrength(user.password)" class="loginInput"
+                placeholder="Contraseña nueva" name="password" [(ngModel)]="user.password" required />
+              <mat-progress-bar [color]="progressBarColor" mode="determinate"
+                [value]="passwordStrength"></mat-progress-bar>
+              <div *ngIf="passwordStrength <= 50" class="text-danger">
+                La contraseña debe ser más fuerte. Usa al menos 8 caracteres.
+              </div>
+            </div>
+            <br />
+            <button type="submit" class="btn btn-register" [disabled]="!registrationForm.valid">
+              Registrarte
+            </button>
+            <div *ngIf="isLoading" class="progress-container">
+              <div class="progress-bar" [style.width.%]="progress"></div>
+            </div>
+            <div *ngIf="registrationForm.invalid && registrationForm.touched" class="alert alert-danger">
+              Por favor, completa todos los campos requeridos correctamente.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

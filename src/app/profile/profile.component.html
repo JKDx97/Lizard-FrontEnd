@@ -1,0 +1,392 @@
+<section class="h-100 gradient-custom-2">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="card custom-card-width border-0">
+                    <div class="rounded-top">
+                        <div class="">
+                            <div class="menu-container">
+                                <img [attr.src]="profile?.photo ? getPhotoUrl(profile.photo) : 'https://i.pinimg.com/originals/47/3e/84/473e84e35274f087695236414ff8df3b.jpg'"
+                                    alt="Profile picture" class="img-fluid rounded-circle mt-4 mb-2"
+                                    (click)="toggleMenu()"
+                                    style="width: 150px; height: 150px; object-fit: cover; z-index: 2; position: relative;" />
+                                <div *ngIf="isMenuOpen" class="menu">
+                                    <ul>
+                                        <li><a (click)="openModalProfile()"><i class="fa-regular fa-id-badge"></i> Ver
+                                                foto de perfil</a></li>
+                                        <li><a (click)="openModalProfileUpload()"><i class="fa-regular fa-image"></i>
+                                                Subir foto de perfil</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="">
+                                <h3 id="user-index" class="">{{ user?.username }}</h3>
+                                <p class="">{{ user?.name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank" class="facebook"><i
+                                class="fab fa-facebook fa-2x"></i></a>
+                        <a href="https://twitter.com" target="_blank" class="twitter"><i
+                                class="fa-brands fa-x-twitter fa-2x"></i></a>
+                        <a href="https://instagram.com" target="_blank" class="instagram"><i
+                                class="fab fa-instagram fa-2x"></i></a>
+                        <a href="https://linkedin.com" target="_blank" class="threads"><i
+                                class="fa-brands fa-threads fa-2x"></i></a>
+                        <a href="https://youtube.com" target="_blank" class="youtube"><i
+                                class="fab fa-youtube fa-2x"></i></a>
+                        <a href="https://tiktok.com" target="_blank" class="tiktok"><i
+                                class="fab fa-tiktok fa-2x"></i></a>
+                    </div>
+
+                    <div class="p-4 text-black">
+                        <div class="d-flex justify-content-around text-center py-2 text-body border-top border-bottom">
+                            <div>
+                                <p class="mb-1 h5">{{ userPosts.length }}</p>
+                                <p class="small text-muted mb-0">Posteos</p>
+                            </div>
+                            <div>
+                                <p class="mb-1 h5">{{ countUploadedPhotos() }}</p>
+                                <p class="small text-muted mb-0">Fotos</p>
+                            </div>
+                            <div>
+                                <p class="mb-1 h5">478</p>
+                                <p class="small text-muted mb-0">Following</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body text-black">
+                        <div class="text-body">
+                            <div class="container-pensando">
+                                <div class="image-input-container">
+                                    <a href="#user-index">
+                                        <img [attr.src]="profile?.photo ? getPhotoUrl(profile.photo) : 'https://i.pinimg.com/originals/47/3e/84/473e84e35274f087695236414ff8df3b.jpg'"
+                                            class="img-fluid rounded-circle"
+                                            style="width: 50px; height: 50px; object-fit: cover;" />
+                                    </a>
+                                </div>
+                                <div class="input-pensando">
+                                    <div class="form-control ms-3 input" style="cursor: pointer;" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal">
+                                        ¿Qué estás pensando?
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-center ">
+                                <div *ngIf="userPosts.length > 0; else noPosts" class="w-75 text-start">
+                                    <div *ngFor="let post of userPosts" class="mb-4">
+                                        <ng-container *ngIf="post?.photo">
+                                            <div class="media-container">
+                                                <div class="photo-container">
+                                                    <div (click)="openModal(post)">
+                                                        <img *ngIf="isImage(post.photo)" [src]="getPostUrl(post.photo)"
+                                                            alt="" class="img-fluid rounded shadow-sm mb-2"
+                                                            style="cursor: pointer;" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <ng-container *ngIf="isVideo(post.photo)">
+                                                <div class="video-container">
+                                                    <video #videoPlayer [src]="getPostUrl(post.photo)"
+                                                        (timeupdate)="updateProgress(videoPlayer)"
+                                                        (click)="openModal(post)" (waiting)="isLoading = true"
+                                                        (canplay)="isLoading = false" class="video-style"></video>
+
+                                                    <div class="spinner" *ngIf="isLoading">
+                                                        <i class="fa fa-spinner fa-spin"></i>
+                                                    </div>
+
+                                                    <div class="controls">
+                                                        <button (click)="togglePlayPause(videoPlayer)">
+                                                            <i [ngClass]="{'fa-play': videoPlayer.paused, 'fa-pause': !videoPlayer.paused}"
+                                                                class="fa"></i>
+                                                        </button>
+
+                                                        <div class="progress-container">
+                                                            <input type="range" class="progress-bar"
+                                                                (input)="seekVideo(videoPlayer, $event)"
+                                                                [value]="currentProgress" max="100">
+                                                            <div class="time-info"><span>{{ currentTime }} / {{ duration
+                                                                    }}</span></div>
+                                                        </div>
+
+                                                        <div class="volume-control">
+                                                            <i (click)="toggleMute(videoPlayer)" [ngClass]="{
+                                    'fa-volume-up': videoPlayer.volume > 0.5 && !videoPlayer.muted,
+                                    'fa-volume-down': videoPlayer.volume <= 0.5 && videoPlayer.volume > 0 && !videoPlayer.muted,
+                                    'fa-volume-off': videoPlayer.muted || videoPlayer.volume == 0
+                                  }" class="fa"></i>
+                                                            <input type="range" (input)="changeVolume($event)"
+                                                                [value]="videoPlayer.volume" min="0" max="1"
+                                                                step="0.01" />
+                                                        </div>
+
+                                                        <button (click)="toggleFullScreen(videoPlayer)">
+                                                            <i class="fa fa-expand"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+
+                                            <div class="post-icons">
+                                                <i class="far fa-heart"></i>
+                                                <i class="far fa-comment"></i>
+                                                <i class="far fa-paper-plane"></i>
+                                            </div>
+                                        </ng-container>
+
+                                        <p>{{ post?.content }}</p>
+
+                                        <div *ngIf="!post?.photo" class="post-icons mt-2">
+                                            <i class="far fa-heart"></i>
+                                            <i class="far fa-comment"></i>
+                                            <i class="far fa-paper-plane"></i>
+                                        </div>
+
+                                        <div class="d-flex align-items-center mt-2">
+                                            <img [src]="getPhotoUrl(profile?.photo) || 'https://i.pinimg.com/originals/47/3e/84/473e84e35274f087695236414ff8df3b.jpg'"
+                                                alt="Author's photo" class="rounded-circle me-2"
+                                                style="width: 30px; height: 30px; object-fit: cover;" />
+                                            <span class="fw-bold">{{ post?.author?.username }}</span>
+                                        </div>
+
+                                        <p class="ms-5 text-muted small">{{ post?.createdAt | timeAgo }}</p>
+                                        <hr />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ng-template #noPosts>
+                                <p class="text-center text-muted">No has publicado ningún post todavía.</p>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title text-center" id="exampleModalLabel">Crear Publicación</h5>
+                <button type="button" class="btn-close position-absolute end-0 me-2" data-bs-dismiss="modal"
+                    aria-label="Close" (click)="reset()"></button>
+            </div>
+            <form (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="d-flex align-items-center">
+                        <img [attr.src]="profile?.photo ? getPhotoUrl(profile.photo) : 'https://i.pinimg.com/originals/47/3e/84/473e84e35274f087695236414ff8df3b.jpg'"
+                            class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
+                        <span style="font-weight: bold;">{{ user?.username }}</span>
+                    </div>
+                    <div class="input-container">
+                        <textarea placeholder="¿Qué está pasando?" class="textarea" #textArea
+                            [style.height]="textAreaHeight" [(ngModel)]="post.content" name="content"></textarea>
+                        <button type="button" (click)="toggleEmojiPicker($event)" class="emoji-button">😊</button>
+                        <div class="emoji-picker-container" *ngIf="isEmojiPickerVisible">
+                            <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
+                        </div>
+                    </div>
+
+                    <!-- Vista previa de imagen o video -->
+                    <div *ngIf="selectedFileUrl" class="text-center preview-container">
+                        <button type="button" (click)="clearSelectedFile()" class="close-button">×</button>
+                        <img *ngIf="selectedFile && selectedFile.type.startsWith('image/')" [src]="selectedFileUrl"
+                            alt="Imagen previa" style="max-width: 100%; max-height: 200px; object-fit: cover;">
+                        <video *ngIf="selectedFile && selectedFile.type.startsWith('video/')" [src]="selectedFileUrl"
+                            controls style="max-width: 100%; max-height: 200px;"></video>
+                    </div>
+
+                    <div style="cursor: pointer;" class="card cardphoto" (click)="photoInput.click()">
+                        <div class="card-body text-center">
+                            <i class="fa-solid fa-photo-film fa-2xm"></i> Foto/Video
+                        </div>
+                    </div>
+                    <input type="file" #photoInput accept="image/*,video/*" (change)="onFileSelected($event)"
+                        style="display: none;">
+
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary form-control" data-bs-dismiss="modal"
+                            aria-label="Close">Publicar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="expandedModal" tabindex="-1" aria-labelledby="expandedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div class="row g-0 h-100">
+                    <!-- Columna izquierda con la imagen -->
+                    <div class="col-8">
+                        <ng-container *ngIf="isImage(modalContent?.photoUrl)">
+                            <img [src]="modalContent?.photoUrl" alt="Imagen" class="img-fluid" />
+                        </ng-container>
+                        <ng-container *ngIf="isVideo(modalContent?.photoUrl)">
+                            <video class="img-fluid" autoplay controls>
+                                <source [src]="modalContent?.photoUrl" type="video/mp4" />
+                                Tu navegador no soporta la reproducción de videos.
+                            </video>
+                        </ng-container>
+                    </div>
+                    <!-- Columna derecha con contenido -->
+                    <div class="col-4 bg-white p-4">
+                        <div class="d-flex align-items-center">
+                            <img [attr.src]="profile?.photo ? getPhotoUrl(profile.photo) : 'https://i.pinimg.com/originals/47/3e/84/473e84e35274f087695236414ff8df3b.jpg'"
+                                class="rounded-circle me-2" style="width: 45px; height: 45px; object-fit: cover" />
+                            <span style="font-weight: bold;">{{ modalContent?.author }}</span>
+                        </div>
+                        <p class="text-muted" style="font-size: 12px; margin-left: 53px;">{{ modalContent?.createdAt |
+                            timeAgo}}</p>
+                        <p>{{modalContent?.content}}</p><!-- Muestra la fecha aquí -->
+                        <hr style="width: 400px;">
+                        <div class="icon-container post-icons"
+                            style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px;">
+                            <i class="far fa-heart"></i>
+                            <i class="far fa-comment"></i>
+                            <i class="far fa-paper-plane"></i>
+                            <i class="fa-regular fa-share-from-square"></i>
+                        </div>
+                        <hr style="width: 400px;">
+
+
+                        <div class="mb-5 text-body">
+                            <div class="container mt-3">
+                                <div class="image-input-container d-flex align-items-center" style="margin-top: -10px;">
+                                    <img [src]="getPhotoUrl(profile?.photo)" alt="Profile picture"
+                                        class="img-fluid rounded-circle mt-4 mb-2"
+                                        style="width: 30px; height: 30px; object-fit: cover; z-index: 3; position: relative;" />
+
+                                    <!-- Div que simula un input deshabilitado y abre el modal -->
+                                    <div class="form-control ms-3 input" style="cursor: pointer; width: 350px;">
+                                        ¿Qué estás pensando?
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="profileImageModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div class="row g-0 h-100">
+                    <!-- Columna izquierda con la imagen -->
+                    <div class="col-8">
+                        <ng-container *ngIf="isImage(profile?.photo)">
+                            <img [src]="getPhotoUrl(profile.photo)" alt="Imagen" class="img-fluid" />
+                        </ng-container>
+                        <ng-container *ngIf="isVideo(modalContent?.photoUrl)">
+                            <video class="img-fluid" controls>
+                                <source [src]="modalContent?.photoUrl" type="video/mp4" />
+                                Tu navegador no soporta la reproducción de videos.
+                            </video>
+                        </ng-container>
+                    </div>
+                    <!-- Columna derecha con contenido -->
+                    <div class="col-4 bg-white p-4">
+                        <div class="d-flex align-items-center">
+                            <img [attr.src]="profile?.photo ? getPhotoUrl(profile.photo) : 'https://i.pinimg.com/originals/47/3e/84/473e84e35274f087695236414ff8df3b.jpg'"
+                                class="rounded-circle me-2" style="width: 45px; height: 45px; object-fit: cover" />
+                            <span style="font-weight: bold;">{{ profile?.user.username }}</span>
+                        </div>
+                        <p class="text-muted" style="font-size: 12px; margin-left: 53px;">{{ profile?.createAt |
+                            timeAgo}}</p>
+                        <hr style="width: 400px;">
+                        <div class="icon-container post-icons"
+                            style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px;">
+                            <i class="far fa-heart"></i>
+                            <i class="far fa-comment"></i>
+                            <i class="far fa-paper-plane"></i>
+                            <i class="fa-regular fa-share-from-square"></i>
+                        </div>
+                        <hr style="width: 400px;">
+
+
+                        <div class="mb-5 text-body">
+                            <div class="container mt-3">
+                                <div class="image-input-container d-flex align-items-center" style="margin-top: -10px;">
+                                    <img [src]="getPhotoUrl(profile?.photo)" alt="Profile picture"
+                                        class="img-fluid rounded-circle mt-4 mb-2"
+                                        style="width: 30px; height: 30px; object-fit: cover; z-index: 3; position: relative;" />
+
+                                    <!-- Div que simula un input deshabilitado y abre el modal -->
+                                    <div class="form-control ms-3 input" style="cursor: pointer; width: 350px;">
+                                        ¿Qué estás pensando?
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1" role="dialog" aria-labelledby="uploadPhotoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center w-100" id="uploadPhotoModalLabel">Subir foto de perfil</h5>
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body bodyProfile">
+                <div class="containerUploadProfile">
+                    <div class="avatar-upload">
+                        <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg"
+                                (change)="onFileProfile($event)" />
+                            <label for="imageUpload"><i class="fa-solid fa-square-pen" style="color: #ffffff;"></i></label>
+                        </div>
+                        <div class="avatar-preview">
+                            <!-- Div que mostrará la vista previa de la imagen seleccionada -->
+                            <div id="imagePreview" [ngStyle]="{ 'background-image': 'url(' + previewImage + ')' }">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" (click)="onUploadProfile()" class="btn btn-primary form-control me-2"
+                            data-bs-dismiss="modal" aria-label="Close">Guardar</button>
+                        <button type="button" (click)="onCancelProfile()" class="btn btn-secondary form-control ms-2"
+                            data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
