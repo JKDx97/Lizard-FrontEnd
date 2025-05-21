@@ -15,7 +15,7 @@ import { MessagesService } from '../services/messages.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { io, Socket } from 'socket.io-client';
-import { environment } from '../environments/environment'
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-messages',
@@ -24,7 +24,9 @@ import { environment } from '../environments/environment'
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.css',
 })
-export class MessagesComponent implements OnInit, AfterViewInit , AfterViewChecked {
+export class MessagesComponent
+  implements OnInit, AfterViewInit, AfterViewChecked
+{
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
 
   @Input() user: any;
@@ -41,21 +43,11 @@ export class MessagesComponent implements OnInit, AfterViewInit , AfterViewCheck
     this.socket = io(environment.api);
   }
 
-  ngOnInit(): void {
-    this.messageService.getNewMessages().subscribe((newMessage: any) => {
-      if (
-        newMessage.sender === this.user.credentials._id ||
-        newMessage.receiver === this.user.credentials._id
-      ) {
-        this.messages.push(newMessage);
-        this.cd.detectChanges();
-      }
-    });
-  }
+  ngOnInit(): void {}
   ngAfterViewInit(): void {
     this.scrollToBottom();
   }
-   ngAfterViewChecked(): void {
+  ngAfterViewChecked(): void {
     this.scrollToBottom();
   }
   scrollToBottom(): void {
@@ -93,8 +85,9 @@ export class MessagesComponent implements OnInit, AfterViewInit , AfterViewCheck
             (newMessage.sender === this.user.credentials._id ||
               newMessage.receiver === this.user.credentials._id)
           ) {
-            this.messages.unshift(newMessage);
+            this.messages.push(newMessage);
             this.cd.detectChanges();
+            this.scrollToBottom();
           }
         });
       });
