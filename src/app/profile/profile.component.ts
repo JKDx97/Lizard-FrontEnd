@@ -231,8 +231,11 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         this.profileService.OnNewprofile().subscribe((newProfile: any) => {
           this.ngZone.run(() => {
-            this.profile = newProfile;
-            this.cd.detectChanges();
+            if (newProfile.user === this.user._id) {
+              this.profile = newProfile;
+              this.previewImage = this.getPhotoUrl(newProfile.photo); // Actualiza también la vista previa
+              this.cd.detectChanges();
+            }
           });
         });
       }
